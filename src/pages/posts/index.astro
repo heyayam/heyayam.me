@@ -1,0 +1,6 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<BaseLayout title="Posts"><section class="page"><p class="eyebrow">Notes on systems, software, and learning</p><h1>Posts</h1><div class="post-list">{posts.map((post) => <a class="post-row" href={`/posts/${post.id}/`}><div><h2>{post.data.title}</h2><p>{post.data.description}</p></div><time>{post.data.date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</time></a>)}</div></section></BaseLayout>

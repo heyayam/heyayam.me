@@ -1,0 +1,35 @@
+---
+import "../styles/global.css";
+interface Props { title?: string; description?: string; }
+const { title = "Ayam Dhotekar", description = "Low-level systems from Rust roots to intelligent infrastructure." } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <title>{title === "Ayam Dhotekar" ? title : `${title} — Ayam Dhotekar`}</title>
+    <script is:inline>
+      const saved = localStorage.getItem('theme');
+      document.documentElement.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="/">Ayam Dhotekar</a>
+      <nav aria-label="Main navigation">
+        <a href="/posts">Posts</a><a href="/about">About</a>
+        <button class="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle theme">◐</button>
+      </nav>
+    </header>
+    <main><slot /></main>
+    <footer>© {new Date().getFullYear()} Ayam Dhotekar</footer>
+    <script is:inline>
+      document.querySelector('.theme-toggle')?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next; localStorage.setItem('theme', next);
+      });
+    </script>
+  </body>
+</html>
