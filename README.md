@@ -1,11 +1,13 @@
 
+# heyayam.me
+
 An Astro-powered personal portfolio and blog.
 
 ## Before you publish
 
 1. Copy your photo to `public/images/ayam.jpg`.
 2. Update the GitHub, Twitter, and email links in `src/pages/index.astro`.
-3. Install Node.js 20+ and run:
+3. Install Node.js 20+ and run these as **two separate commands**:
 
    ```bash
    npm install
@@ -14,31 +16,19 @@ An Astro-powered personal portfolio and blog.
 
    Visit the local URL printed in your terminal. Build the production site with `npm run build`; the publishable files will be in `dist/`.
 
-## Option A — GitHub Pages
+## Publish with GitHub Pages
 
-This is free, but it serves a static site. Create a repository named `heyayam.github.io`, add this project to it, then enable **Settings → Pages → GitHub Actions**. Add the workflow below as `.github/workflows/deploy.yml`:
+This repository is already configured for GitHub Pages. The deployment workflow lives at `.github/workflows/deploy-pages.yml`, so do **not** create or paste another workflow.
 
-```yaml
-name: Deploy site
-on:
-  push: { branches: [main] }
-permissions: { contents: read, pages: write, id-token: write }
-concurrency: { group: pages, cancel-in-progress: true }
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 22, cache: npm }
-      - run: npm ci
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: ./dist }
-      - uses: actions/deploy-pages@v4
-```
+After pushing to the `main` branch:
 
-In your domain DNS provider, add GitHub Pages’ custom-domain records shown in **Settings → Pages**, then add `heyayam.me` as the custom domain there. GitHub will issue HTTPS after DNS verifies.
+1. Open your GitHub repository → **Settings** → **Pages**.
+2. Under **Build and deployment**, select **GitHub Actions** as the source.
+3. Open the **Actions** tab and wait for **Deploy to GitHub Pages** to complete successfully. Every later push to `main` publishes a new version automatically.
+4. Back in **Settings** → **Pages**, enter `heyayam.me` under **Custom domain** and save it.
+5. At your domain's DNS provider, add the exact records GitHub shows for the custom domain. Once GitHub verifies them, enable **Enforce HTTPS**.
+
+The repository may remain named `heyayam.me`; it does not need to be named `heyayam.github.io` because the custom domain is configured separately.
 
 ## Option B — your VPS (recommended when you already have one)
 
@@ -57,4 +47,3 @@ server {
 Enable it with `sudo ln -s /etc/nginx/sites-available/heyayam.me /etc/nginx/sites-enabled/`, verify with `sudo nginx -t`, and reload with `sudo systemctl reload nginx`. Point DNS `A` records for `@` and `www` to your VPS public IPv4 address. Finally enable TLS: `sudo certbot --nginx -d heyayam.me -d www.heyayam.me`.
 
 For updates, you can keep the source in GitHub and either pull/build on the VPS or use a GitHub Action with SSH deployment.
->>>>>>> 07533d7 (Blog content)
