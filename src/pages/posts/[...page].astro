@@ -1,0 +1,41 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import type { Page, PaginateFunction } from "astro";
+import Card from "@/components/Card.astro";
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import Pagination from "@/components/Pagination.astro";
+import { SITE } from "@/config";
+import Layout from "@/layouts/Layout.astro";
+import getSortedPosts from "@/utils/getSortedPosts";
+
+export async function getStaticPaths({ paginate }: { paginate: PaginateFunction }) {
+  const posts = await getCollection("blog");
+  const sortedPosts = getSortedPosts(posts);
+  return paginate(sortedPosts, { pageSize: SITE.postPerPage });
+}
+
+interface Props {
+  page: Page<CollectionEntry<"blog">>;
+}
+
+const { page } = Astro.props;
+---
+
+<Layout title={`Posts | ${SITE.title}`} description={`All posts by ${SITE.author}.`}>
+  <Header />
+
+  <main id="main-content" class="mx-auto w-full max-w-3xl px-4 pb-12">
+    <h1 class="mt-8 text-2xl font-semibold sm:text-3xl">Posts</h1>
+
+    <ul>
+      {page.data.map((post) => <Card variant="h3" {post} />)}
+    </ul>
+
+    {page.data.length === 0 && <p class="py-8 opacity-70">No posts yet.</p>}
+
+    <Pagination {page} />
+  </main>
+
+  <Footer />
+</Layout>

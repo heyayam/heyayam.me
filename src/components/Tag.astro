@@ -1,0 +1,21 @@
+---
+import { slugifyStr } from "@/utils/slugify";
+import IconHash from "@/assets/icons/IconHash.svg";
+
+export interface Props {
+  tag: string;
+}
+
+const { tag } = Astro.props;
+const slug = slugifyStr(tag);
+---
+
+<li class="inline-block">
+  <a
+    href={`/tags/${slug}/`}
+    class="mt-1 mr-1 inline-block rounded-lg border border-border px-3 py-1 text-sm transition-all hover:border-accent hover:text-accent"
+  >
+    <IconHash class="inline-block size-4" />
+    <span>{tag}</span>
+  </a>
+</li>

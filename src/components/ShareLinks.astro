@@ -1,0 +1,35 @@
+---
+import IconMail from "@/assets/icons/IconMail.svg";
+import IconBrandX from "@/assets/icons/IconBrandX.svg";
+import LinkButton from "./LinkButton.astro";
+
+export interface Props {
+  url: string;
+  title: string;
+}
+
+const { url, title } = Astro.props;
+const encodedUrl = encodeURIComponent(url);
+const encodedTitle = encodeURIComponent(title);
+---
+
+<div class="flex items-center gap-3">
+  <span class="text-sm opacity-70">Share:</span>
+  <LinkButton
+    href={`https://x.com/intent/post?url=${encodedUrl}&text=${encodedTitle}`}
+    target="_blank"
+    class="p-1"
+    title="Share this post on X"
+  >
+    <IconBrandX class="inline-block size-5 scale-110" />
+    <span class="sr-only">Share this post on X</span>
+  </LinkButton>
+  <LinkButton
+    href={`mailto:?subject=${encodedTitle}&body=${encodedUrl}`}
+    class="p-1"
+    title="Share this post via email"
+  >
+    <IconMail class="inline-block size-5 scale-110" />
+    <span class="sr-only">Share this post via email</span>
+  </LinkButton>
+</div>

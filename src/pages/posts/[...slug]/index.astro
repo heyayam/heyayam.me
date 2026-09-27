@@ -1,0 +1,22 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import PostDetails from "@/layouts/PostDetails.astro";
+import publishedPostFilter from "@/utils/postFilter";
+import getSortedPosts from "@/utils/getSortedPosts";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", publishedPostFilter);
+  return posts.map((post: CollectionEntry<"blog">) => ({
+    // The id is already the path relative to the blog folder, e.g.
+    // `2026/on-systems-and-curiosity`.
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const allPosts = await getCollection("blog");
+const sortedPosts = getSortedPosts(allPosts);
+---
+
+<PostDetails {post} posts={sortedPosts} />

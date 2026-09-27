@@ -1,0 +1,31 @@
+---
+import { getCollection } from "astro:content";
+import publishedPostFilter from "@/utils/postFilter";
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import Tag from "@/components/Tag.astro";
+import { SITE } from "@/config";
+import Layout from "@/layouts/Layout.astro";
+import getSortedPosts from "@/utils/getSortedPosts";
+import getUniqueTags from "@/utils/getUniqueTags";
+
+const posts = getSortedPosts(await getCollection("blog", publishedPostFilter));
+const tags = getUniqueTags(posts);
+---
+
+<Layout title={`Tags | ${SITE.title}`} description={`All tags used on ${SITE.title}.`}>
+  <Header />
+
+  <main id="main-content" class="mx-auto w-full max-w-3xl px-4 pb-12">
+    <h1 class="mt-8 text-2xl font-semibold sm:text-3xl">Tags</h1>
+    <p class="mt-2 mb-6 italic">Everything I've written about, grouped by topic.</p>
+
+    <ul class="flex flex-wrap gap-2">
+      {tags.map(({ tagName }) => <Tag tag={tagName} />)}
+    </ul>
+
+    {tags.length === 0 && <p class="py-8 opacity-70">No tags yet.</p>}
+  </main>
+
+  <Footer />
+</Layout>

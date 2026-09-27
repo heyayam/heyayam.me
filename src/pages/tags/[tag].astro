@@ -1,0 +1,50 @@
+---
+import { getCollection } from "astro:content";
+import Card from "@/components/Card.astro";
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import { SITE } from "@/config";
+import Layout from "@/layouts/Layout.astro";
+import getPostsByTag from "@/utils/getPostsByTag";
+import getUniqueTags from "@/utils/getUniqueTags";
+import publishedPostFilter from "@/utils/postFilter";
+
+export async function getStaticPaths() {
+  // Only published posts may create tag routes — otherwise a draft would
+  // leak its tags (and therefore its existence) into the live site.
+  const posts = await getCollection("blog", publishedPostFilter);
+  const tags = getUniqueTags(posts);
+
+  return tags.map(({ tag, tagName }) => ({
+    params: { tag },
+    props: { tag, tagName },
+  }));
+}
+
+const { tag, tagName } = Astro.props;
+const posts = getPostsByTag(await getCollection("blog", publishedPostFilter), tag);
+---
+
+<Layout
+  title={`${tagName} | ${SITE.title}`}
+  description={`Posts tagged "${tagName}" on ${SITE.title}.`}
+>
+  <Header />
+
+  <main id="main-content" class="mx-auto w-full max-w-3xl px-4 pb-12">
+    <h1 class="mt-8 text-2xl font-semibold sm:text-3xl">#{tagName}</h1>
+    <p class="mt-2 mb-6 italic">
+      {posts.length} post{posts.length === 1 ? "" : "s"} tagged &ldquo;{tagName}&rdquo;.
+    </p>
+
+    <ul>
+      {posts.map((post) => <Card variant="h3" {post} />)}
+    </ul>
+
+    <a href="/tags/" class="focus-outline mt-8 inline-block underline decoration-dashed underline-offset-8 hover:text-accent">
+      &larr; All tags
+    </a>
+  </main>
+
+  <Footer />
+</Layout>

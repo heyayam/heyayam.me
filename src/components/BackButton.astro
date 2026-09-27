@@ -1,0 +1,33 @@
+---
+import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
+import { SITE } from "@/config";
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+{
+  SITE.showBackButton && (
+    <div class:list={["mx-auto max-w-3xl px-4", className]}>
+      <button
+        id="back-button"
+        class="focus-outline flex items-center gap-1 py-2 hover:opacity-75"
+        aria-label="Go back"
+      >
+        <IconArrowLeft class="inline-block" />
+        <span>Go back</span>
+      </button>
+    </div>
+  )
+}
+
+<script>
+  document.querySelector<HTMLButtonElement>("#back-button")?.addEventListener("click", () => {
+    const backUrl = sessionStorage.getItem("backUrl");
+    if (backUrl) window.location.href = backUrl;
+    else window.history.back();
+  });
+</script>

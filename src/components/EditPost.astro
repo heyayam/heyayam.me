@@ -1,0 +1,38 @@
+---
+import IconEdit from "@/assets/icons/IconEdit.svg";
+import { SITE } from "@/config";
+
+export interface Props {
+  hideEditPost?: boolean;
+  class?: string;
+  /** Collection id, e.g. `2026/on-systems-and-curiosity`. */
+  id: string;
+  /**
+   * Repo-relative path to the source file, straight off the collection entry
+   * (`src/content/blog/2026/post.md`). Preferred over `id` because it keeps the
+   * real extension, so `.mdx` posts link correctly too.
+   */
+  filePath?: string;
+}
+
+const { hideEditPost = false, class: className = "", id, filePath } = Astro.props;
+
+const show = SITE.editPost.enabled && !hideEditPost;
+const sourcePath = filePath ?? `src/content/blog/${id}.md`;
+const url = `${SITE.editPost.url}${sourcePath}`;
+---
+
+{
+  show && (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={SITE.editPost.text}
+      class:list={["focus-outline flex items-center gap-1 opacity-70 hover:opacity-100", className]}
+    >
+      <IconEdit class="inline-block size-5" />
+      <span class="sr-only sm:not-sr-only">{SITE.editPost.text}</span>
+    </a>
+  )
+}

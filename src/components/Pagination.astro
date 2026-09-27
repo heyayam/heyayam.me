@@ -1,0 +1,42 @@
+---
+import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+import type { Page } from "astro";
+
+export interface Props {
+  page: Page<unknown>;
+}
+
+const { page } = Astro.props;
+
+// Astro's `paginate()` uses `/posts` for page 1 and `/posts/2` for the rest,
+// so the first page has no `page` param.
+const prevUrl = page.url.prev;
+const nextUrl = page.url.next;
+---
+
+<nav class="my-8 flex items-center justify-between gap-4" aria-label="Pagination">
+  {
+    prevUrl ? (
+      <a href={prevUrl} class="focus-outline flex items-center gap-1 hover:text-accent">
+        <IconArrowLeft class="inline-block" />
+        <span>Prev</span>
+      </a>
+    ) : (
+      <span />
+    )
+  }
+
+  <span class="text-sm opacity-70">Page {page.currentPage} of {page.lastPage}</span>
+
+  {
+    nextUrl ? (
+      <a href={nextUrl} class="focus-outline flex items-center gap-1 hover:text-accent">
+        <span>Next</span>
+        <IconArrowRight class="inline-block" />
+      </a>
+    ) : (
+      <span />
+    )
+  }
+</nav>

@@ -1,0 +1,137 @@
+---
+import { getCollection } from "astro:content";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+import IconRss from "@/assets/icons/IconRss.svg";
+import Card from "@/components/Card.astro";
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import Hr from "@/components/Hr.astro";
+import LinkButton from "@/components/LinkButton.astro";
+import Socials from "@/components/Socials.astro";
+import StructuredData from "@/components/StructuredData.astro";
+import { SOCIALS } from "@/constants";
+import { SITE } from "@/config";
+import Layout from "@/layouts/Layout.astro";
+import getSortedPosts from "@/utils/getSortedPosts";
+
+const posts = await getCollection("blog");
+const sortedPosts = getSortedPosts(posts);
+
+const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
+const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
+---
+
+<Layout description={`${SITE.author}: ${SITE.bio}`}>
+  <StructuredData type="WebSite" />
+  <StructuredData type="Person" />
+
+  <Header />
+
+  <main id="main-content" data-layout="index">
+    <section id="hero" class="px-4 pt-6 pb-4">
+      <div class="flex flex-col items-start gap-4 sm:flex-row">
+        <a href="/about/" class="group mx-auto block sm:mx-0">
+          <!-- Replace `public/avatar.jpg` with your photo (square, 400x400+). -->
+          <img
+            src="/avatar.jpg"
+            alt={SITE.author}
+            width="160"
+            height="160"
+            class="h-40 w-40 flex-shrink-0 rounded-full object-cover transition-all duration-300 group-hover:scale-105 group-hover:shadow-xl"
+          />
+        </a>
+        <div class="flex-1 text-center sm:text-left">
+          <div class="flex items-center justify-center gap-2 sm:justify-start">
+            <h1 class="my-2 inline-block text-2xl font-bold sm:my-4 sm:text-3xl">
+              Hi, I'm {SITE.handle}.
+            </h1>
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="/rss.xml"
+              class="inline-block"
+              aria-label="rss feed"
+              title="RSS Feed"
+            >
+              <IconRss width={20} height={20} class="scale-125 stroke-accent stroke-3" />
+              <span class="sr-only">RSS Feed</span>
+            </a>
+          </div>
+          <p>
+            {
+              SITE.desc.map((line, index) => (
+                <>
+                  {line}
+                  {index < SITE.desc.length - 1 && <br />}
+                </>
+              ))
+            }
+          </p>
+          {
+            SOCIALS.filter((social) => social.active).length > 0 && (
+              <div class="mt-4 flex flex-row items-center justify-center sm:justify-start">
+                <Socials />
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </section>
+
+    <Hr />
+
+    {
+      featuredPosts.length > 0 && (
+        <>
+          <section id="featured" class="pt-12 pb-6">
+            <h2 class="text-2xl font-semibold tracking-wide">Featured</h2>
+            <ul>
+              {featuredPosts.map((post) => (
+                <Card variant="h3" {post} />
+              ))}
+            </ul>
+          </section>
+          {recentPosts.length > 0 && <Hr />}
+        </>
+      )
+    }
+
+    {
+      recentPosts.length > 0 && (
+        <section id="recent-posts" class="pt-12 pb-6">
+          <ul>
+            {recentPosts
+              .slice(0, SITE.postPerIndex)
+              .map((post) => (
+                <Card variant="h3" {post} />
+              ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      sortedPosts.length === 0 && (
+        <section class="py-12 text-center opacity-70">
+          <p>No posts yet. Add a markdown file to `src/content/blog/` to get started.</p>
+        </section>
+      )
+    }
+
+    <div class="my-8 text-center">
+      <LinkButton href="/posts/">
+        All Posts
+        <IconArrowRight class="inline-block" />
+      </LinkButton>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const indexLayout = document.querySelector<HTMLElement>("#main-content")?.dataset?.layout;
+    if (indexLayout) sessionStorage.setItem("backUrl", "/");
+  });
+</script>

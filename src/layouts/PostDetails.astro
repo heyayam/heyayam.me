@@ -1,0 +1,215 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import IconChevronLeft from "@/assets/icons/IconChevronLeft.svg";
+import IconChevronRight from "@/assets/icons/IconChevronRight.svg";
+import Datetime from "@/components/Datetime.astro";
+import EditPost from "@/components/EditPost.astro";
+import Footer from "@/components/Footer.astro";
+import Header from "@/components/Header.astro";
+import ShareLinks from "@/components/ShareLinks.astro";
+import StructuredData from "@/components/StructuredData.astro";
+import Tag from "@/components/Tag.astro";
+import { SITE } from "@/config";
+import Layout from "@/layouts/Layout.astro";
+import { getPath } from "@/utils/getPath";
+import { getReadingMetrics } from "@/utils/readingTime";
+import { slugifyStr } from "@/utils/slugify";
+
+export interface Props {
+  post: CollectionEntry<"blog">;
+  posts: CollectionEntry<"blog">[];
+}
+
+const { post, posts } = Astro.props;
+
+const {
+  title,
+  author,
+  description,
+  canonicalURL,
+  pubDatetime,
+  modDatetime,
+  timezone,
+  tags,
+  hideEditPost,
+  heroImage,
+  ogImage,
+} = post.data;
+
+const { Content } = await render(post);
+const { label: readingTime, minutes: readingTimeMinutes, words: wordCount } =
+  getReadingMetrics(post.body ?? "");
+
+const postPath = getPath(post.id);
+const computedCanonicalURL =
+  canonicalURL ?? new URL(postPath, Astro.site ?? Astro.url).href;
+
+let ogImageUrl: string | undefined;
+if (typeof ogImage === "string") ogImageUrl = ogImage;
+else if (ogImage && "src" in ogImage) ogImageUrl = ogImage.src;
+const resolvedOgImage = ogImageUrl
+  ? new URL(ogImageUrl, Astro.site ?? Astro.url).href
+  : undefined;
+
+/* ===== Previous / next post ===== */
+const currentIndex = posts.findIndex((p) => p.id === post.id);
+const prevPost = currentIndex > 0 ? posts[currentIndex - 1] : null;
+const nextPost =
+  currentIndex !== -1 && currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
+
+function relativeUrl(target: string) {
+  const site = Astro.site ?? Astro.url;
+  return new URL(target, site).pathname;
+}
+---
+
+<Layout
+  title={`${title} | ${SITE.title}`}
+  author={author}
+  description={description}
+  {pubDatetime}
+  {modDatetime}
+  canonicalURL={computedCanonicalURL}
+  ogImage={resolvedOgImage}
+  scrollSmooth
+>
+  <div class="progress-container fixed top-0 z-10 h-1 w-full bg-background" aria-hidden="true">
+    <div id="reading-progress" class="h-1 w-0 bg-accent"></div>
+  </div>
+
+  <StructuredData
+    type="BlogPosting"
+    data={{
+      title,
+      description,
+      author,
+      pubDatetime,
+      modDatetime,
+      url: computedCanonicalURL,
+      ogImage: resolvedOgImage,
+      tags,
+      wordCount,
+      readingTimeMinutes,
+    }}
+  />
+
+  <Header />
+
+  <main id="main-content" class="mx-auto w-full max-w-3xl px-4 pb-12">
+    <h1
+      transition:name={slugifyStr(title)}
+      class="mt-8 inline-block text-2xl font-bold text-accent sm:text-3xl"
+    >
+      {title}
+    </h1>
+
+    <div class="mt-2 mb-6 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+        {
+          readingTime && (
+            <>
+              <span class="text-foreground/30">&bull;</span>
+              <span class="text-sm text-foreground/60">{readingTime}</span>
+            </>
+          )
+        }
+      </div>
+      <EditPost class="max-sm:hidden" id={post.id} filePath={post.filePath} {hideEditPost} />
+    </div>
+
+    <article id="article" class="prose mt-6 max-w-3xl">
+      {
+        heroImage && (
+          <img
+            src={heroImage}
+            alt=""
+            class="mb-8 aspect-video w-full rounded-md object-cover"
+            loading="lazy"
+          />
+        )
+      }
+      <Content />
+    </article>
+
+    <hr class="my-8 border-dashed" />
+
+    <EditPost class="sm:hidden" id={post.id} filePath={post.filePath} {hideEditPost} />
+
+    <ul class="mt-4 mb-8 sm:my-8">
+      {tags.map((tag) => <Tag tag={tag} />)}
+    </ul>
+
+    <div class="flex flex-col items-center justify-between gap-6 sm:flex-row sm:items-end sm:gap-4">
+      <ShareLinks url={computedCanonicalURL} title={title} />
+
+      <button id="back-to-top" class="focus-outline py-1 whitespace-nowrap hover:opacity-75">
+        <IconChevronLeft class="inline-block rotate-90" />
+        <span>Back to Top</span>
+      </button>
+    </div>
+
+    <hr class="my-6 border-dashed" />
+
+    <div class="flex flex-col justify-between gap-6 sm:flex-row">
+      {
+        prevPost && (
+          <a
+            href={relativeUrl(getPath(prevPost.id))}
+            class="flex items-start gap-2 hover:opacity-75"
+            id="prev-post-link"
+          >
+            <IconChevronLeft class="mt-0.5 inline-block flex-shrink-0" />
+            <div class="min-w-0">
+              <span class="block text-sm text-foreground/70">Previous Post</span>
+              <div class="text-accent/85">{prevPost.data.title}</div>
+            </div>
+          </a>
+        )
+      }
+      {
+        nextPost && (
+          <a
+            href={relativeUrl(getPath(nextPost.id))}
+            class="ml-auto flex items-start justify-end gap-2 text-right hover:opacity-75"
+            id="next-post-link"
+          >
+            <div class="min-w-0">
+              <span class="block text-sm text-foreground/70">Next Post</span>
+              <div class="text-accent/85">{nextPost.data.title}</div>
+            </div>
+            <IconChevronRight class="mt-0.5 inline-block flex-shrink-0" />
+          </a>
+        )
+      }
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
+
+<script>
+  let listeners: AbortController | undefined;
+
+  const updateProgress = () => {
+    const bar = document.querySelector<HTMLElement>("#reading-progress");
+    if (!bar) return;
+    const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = scrollable > 0 ? Math.min(100, (window.scrollY / scrollable) * 100) : 0;
+    bar.style.width = `${progress}%`;
+  };
+
+  document.addEventListener("astro:page-load", () => {
+    listeners?.abort();
+    listeners = new AbortController();
+    const { signal } = listeners;
+
+    document.querySelector("#back-to-top")?.addEventListener(
+      "click",
+      () => window.scrollTo({ top: 0, behavior: "smooth" }),
+      { signal },
+    );
+    window.addEventListener("scroll", updateProgress, { passive: true, signal });
+    updateProgress();
+  });
+</script>

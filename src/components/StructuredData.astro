@@ -1,0 +1,57 @@
+---
+import { SITE } from "@/config";
+
+export interface Props {
+  /** Schema.org type to emit. */
+  type: "WebSite" | "Person" | "BlogPosting";
+  data?: Record<string, unknown>;
+}
+
+const { type, data = {} } = Astro.props;
+
+const url = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.href;
+const avatarUrl = SITE.ogImage
+  ? new URL(`/${SITE.ogImage}`, Astro.site ?? Astro.url).href
+  : undefined;
+
+const schemas: Record<string, Record<string, unknown>> = {
+  WebSite: {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE.title,
+    url: SITE.website,
+    description: SITE.bio,
+    author: { "@type": "Person", name: SITE.author },
+  },
+  Person: {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: SITE.author,
+    url: SITE.website,
+    email: SITE.email,
+    description: SITE.bio,
+    ...(avatarUrl ? { image: avatarUrl } : {}),
+    sameAs: ["https://github.com/heyayam", "https://x.com/heyayam"],
+  },
+  BlogPosting: {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: data.title,
+    description: data.description,
+    author: { "@type": "Person", name: data.author ?? SITE.author },
+    datePublished: (data.pubDatetime as Date | undefined)?.toISOString(),
+    dateModified:
+      ((data.modDatetime as Date | null | undefined) ?? (data.pubDatetime as Date | undefined))?.toISOString(),
+    url: data.url ?? url,
+    mainEntityOfPage: { "@type": "WebPage", "@id": data.url ?? url },
+    ...(data.ogImage ? { image: data.ogImage } : {}),
+    ...(Array.isArray(data.tags) && data.tags.length ? { keywords: (data.tags as string[]).join(", ") } : {}),
+    ...(data.wordCount ? { wordCount: data.wordCount } : {}),
+    ...(data.readingTimeMinutes
+      ? { timeRequired: `PT${data.readingTimeMinutes}M` }
+      : {}),
+  },
+};
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(schemas[type])} />
