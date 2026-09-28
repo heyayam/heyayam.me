@@ -1,11 +1,15 @@
 ---
 import Footer from "@/components/Footer.astro";
 import Header from "@/components/Header.astro";
+import Socials from "@/components/Socials.astro";
 import { SITE } from "@/config";
 import Layout from "@/layouts/Layout.astro";
 ---
 
-<Layout title={`About | ${SITE.title}`} description={`About ${SITE.author}.`}>
+<Layout
+  title={`About | ${SITE.title}`}
+  description={`About ${SITE.author} — ${SITE.bio}`}
+>
   <Header />
 
   <main id="main-content" class="mx-auto w-full max-w-3xl px-4 pb-12">
@@ -13,23 +17,57 @@ import Layout from "@/layouts/Layout.astro";
       <h1>About</h1>
 
       {/*
-        ────────────────────────────────────────────────────────────────
-        ABOUT PAGE — blank template, ready for you to fill in.
-        Write normal markdown here, or drop the copy in and delete this
-        comment. Anything you put inside <article> is styled by the
-        `prose` classes, so headings, lists, links, code and images all
-        pick up the site's light/dark theming automatically.
-        ────────────────────────────────────────────────────────────────
+        About-page image — swap the file in `public/`.
+        The filename is SITE.aboutImage in src/config.ts (default: about-image.jpg).
+        A landscape photo works best; it renders full width at 16:9.
       */}
+      <img
+        src={`/${SITE.aboutImage}`}
+        alt={SITE.author}
+        width="1200"
+        height="675"
+        class="aspect-video w-full rounded-md object-cover"
+        loading="lazy"
+      />
+
+      <p>I'm an AI Engineer interested in the systems and tools that make AI useful.</p>
 
       <p>
-        <em>Coming soon.</em>
+        I studied mechanical engineering and spent three years working in the water
+        sector. I started programming in 2019, and my curiosity eventually took me from
+        software into microcontrollers, IoT, processors, GPUs, and the systems behind
+        modern computing. Building an ESP32 based smart greenhouse during college was
+        one of the projects that really got me interested in understanding what happens
+        underneath the software.
       </p>
 
       <p>
-        I'm {SITE.author} — {SITE.bio}
+        Today, I work across the AI engineering stack, from data and models to
+        infrastructure, tooling, and the applications built on top of them. I enjoy
+        understanding how the pieces fit together, but also building things and seeing
+        them work in the real world.
       </p>
+
+      <p>This blog is where I document that journey.</p>
+
+      <p>
+        I'll write about AI, machine learning, data, systems, programming,
+        infrastructure, and the occasional project that I find interesting enough to
+        build.
+      </p>
+
+      <p>I don't have a grand plan for the blog.</p>
+
+      <p>I'm mostly here to follow my curiosity and write down what I learn along the way.</p>
+
+      <hr />
+
+      <p>Find me on:</p>
     </article>
+
+    <div class="mt-4">
+      <Socials />
+    </div>
   </main>
 
   <Footer />

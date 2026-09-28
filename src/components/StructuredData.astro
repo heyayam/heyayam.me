@@ -1,5 +1,6 @@
 ---
 import { SITE } from "@/config";
+import { SAME_AS } from "@/constants";
 
 export interface Props {
   /** Schema.org type to emit. */
@@ -10,8 +11,8 @@ export interface Props {
 const { type, data = {} } = Astro.props;
 
 const url = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.href;
-const avatarUrl = SITE.ogImage
-  ? new URL(`/${SITE.ogImage}`, Astro.site ?? Astro.url).href
+const avatarUrl = SITE.profileImage
+  ? new URL(`/${SITE.profileImage}`, Astro.site ?? Astro.url).href
   : undefined;
 
 const schemas: Record<string, Record<string, unknown>> = {
@@ -28,10 +29,11 @@ const schemas: Record<string, Record<string, unknown>> = {
     "@type": "Person",
     name: SITE.author,
     url: SITE.website,
-    email: SITE.email,
+    // Only present once you set `email` in src/config.ts.
+    ...(SITE.email ? { email: SITE.email } : {}),
     description: SITE.bio,
     ...(avatarUrl ? { image: avatarUrl } : {}),
-    sameAs: ["https://github.com/heyayam", "https://x.com/heyayam"],
+    sameAs: SAME_AS,
   },
   BlogPosting: {
     "@context": "https://schema.org",

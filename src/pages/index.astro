@@ -31,9 +31,9 @@ const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
     <section id="hero" class="px-4 pt-6 pb-4">
       <div class="flex flex-col items-start gap-4 sm:flex-row">
         <a href="/about/" class="group mx-auto block sm:mx-0">
-          <!-- Replace `public/avatar.jpg` with your photo (square, 400x400+). -->
+          <!-- Swap the file in `public/` — see SITE.profileImage in src/config.ts. -->
           <img
-            src="/avatar.jpg"
+            src={`/${SITE.profileImage}`}
             alt={SITE.author}
             width="160"
             height="160"

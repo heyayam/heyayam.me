@@ -7,11 +7,11 @@ tags: ["rust", "python", "programming-languages"]
 ---
 
 <!--
-  DRAFT — not published. This post only renders in `npm run dev`.
-  Remove `draft: true` from the frontmatter above when it's finished.
-  Set an accurate `pubDatetime` at the same time.
+  DRAFT — not published. This only renders in `npm run dev`.
+  Remove `draft: true` from the frontmatter above when it's finished,
+  and set an accurate `pubDatetime` at the same time.
 -->
 
-I started programming in rust around 2023 when I crossed roads with a reel. Since then. I've been interested in the language like maniac. I have been coding since 2019 when I wrote my first C++ program back in college. Read HTML
+I started programming in rust around 2023 when I crossed roads with a reel. Since then. I've been interested in the language like maniac. I have been coding since 2019 when I wrote my first C++ program back in college.
 
-<!-- NOTE: the source note ends mid-sentence here ("Read HTML") — finish this post before publishing. -->
+<!-- NOTE: the source material stops here — continue this post before publishing. -->

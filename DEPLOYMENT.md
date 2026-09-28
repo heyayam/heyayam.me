@@ -33,7 +33,7 @@ your situation.
 **Case A — the remote repo is empty (most likely):**
 
 ```bash
-cd /Users/khush/Documents/heyayam
+cd ~/Documents/heyayam        # wherever this project lives
 git init
 git add .
 git commit -m "Initial commit: Astro portfolio site"
@@ -52,7 +52,7 @@ cd ~/Documents
 git clone https://github.com/heyayam/heyayam.me.git heyayam-remote
 # copy everything except node_modules, dist and .astro into the clone
 rsync -av --exclude node_modules --exclude dist --exclude .astro \
-  /Users/khush/Documents/heyayam/ heyayam-remote/
+  ~/Documents/heyayam/ heyayam-remote/
 cd heyayam-remote
 npm install
 git add .
@@ -60,13 +60,12 @@ git commit -m "Add Astro portfolio site"
 git push
 ```
 
-> **TODO for you:** the placeholder username `heyayam` is used throughout
-> (`src/config.ts`, `src/constants.ts`, `README.md`, `package.json`,
-> `DEPLOYMENT.md`). Search and replace it with your real GitHub username if it
-> differs.
+> The GitHub username `heyayam`, the X handle `heyayam_`, the domain `heyayam.me`
+> and the repo name `heyayam.me` are already wired up in `src/config.ts`,
+> `src/constants.ts`, `package.json` and this file. Nothing needs replacing.
 
-> `.gitignore` already excludes `node_modules/`, `dist/` and `.astro/`, so you
-> will only ever commit source.
+> `.gitignore` already excludes `node_modules/`, `dist/`, `.astro/`, `.npm-cache/`
+> and `.DS_Store`, so you only ever commit source.
 
 ### 2. Turn on GitHub Pages with Actions as the source
 

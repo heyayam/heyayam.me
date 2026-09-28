@@ -1,6 +1,14 @@
 import { SITE } from "./config.ts";
 
-export const SOCIALS = [
+export interface Social {
+  name: string;
+  href: string;
+  linkTitle: string;
+  icon: "github" | "twitter" | "mail";
+  active: boolean;
+}
+
+const socials: Social[] = [
   {
     name: "Github",
     href: "https://github.com/heyayam",
@@ -10,19 +18,31 @@ export const SOCIALS = [
   },
   {
     name: "X",
-    href: "https://x.com/heyayam",
+    href: "https://x.com/heyayam_",
     linkTitle: `${SITE.author} on X`,
     icon: "twitter",
     active: true,
   },
-  {
+];
+
+// The Mail icon shows up automatically once you set `email` in src/config.ts.
+// It is intentionally absent right now so no personal address is published.
+if (SITE.email) {
+  socials.push({
     name: "Mail",
     href: `mailto:${SITE.email}`,
     linkTitle: `Send an email to ${SITE.author}`,
     icon: "mail",
     active: true,
-  },
-] as const;
+  });
+}
+
+export const SOCIALS = socials;
+
+/** Profile URLs identifying the same person, for schema.org `sameAs`. */
+export const SAME_AS = SOCIALS.filter((social) => social.href.startsWith("http")).map(
+  (social) => social.href,
+);
 
 export const SHARE_LINKS = [
   {
